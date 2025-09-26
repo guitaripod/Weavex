@@ -100,7 +100,7 @@ pub enum Command {
         #[arg(
             long,
             value_name = "NUM",
-            default_value = "10",
+            default_value = "50",
             help = "Maximum agent iterations"
         )]
         max_iterations: usize,
