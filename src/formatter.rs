@@ -1,5 +1,16 @@
 use crate::client::{FetchResponse, SearchResponse};
-use serde_json;
+
+fn truncate_utf8(s: &str, max_bytes: usize) -> &str {
+    if s.len() <= max_bytes {
+        return s;
+    }
+
+    let mut end = max_bytes;
+    while end > 0 && !s.is_char_boundary(end) {
+        end -= 1;
+    }
+    &s[..end]
+}
 
 pub fn format_search_results(response: &SearchResponse, as_json: bool) -> String {
     if as_json {
@@ -20,7 +31,7 @@ pub fn format_search_results(response: &SearchResponse, as_json: bool) -> String
         output.push_str(&format!("   {}\n", result.url));
 
         let content_preview = if result.content.len() > 200 {
-            format!("{}...", &result.content[..200])
+            format!("{}...", truncate_utf8(&result.content, 200))
         } else {
             result.content.clone()
         };
@@ -43,7 +54,7 @@ pub fn format_fetch_response(response: &FetchResponse, as_json: bool) -> String 
     let content_preview = if response.content.len() > 1000 {
         format!(
             "{}...\n\n[Content truncated. Use --json for full content]",
-            &response.content[..1000]
+            truncate_utf8(&response.content, 1000)
         )
     } else {
         response.content.clone()
@@ -62,4 +73,45 @@ pub fn format_fetch_response(response: &FetchResponse, as_json: bool) -> String 
     }
 
     output
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_truncate_utf8_ascii() {
+        let text = "Hello, World!";
+        assert_eq!(truncate_utf8(text, 5), "Hello");
+        assert_eq!(truncate_utf8(text, 100), text);
+    }
+
+    #[test]
+    fn test_truncate_utf8_emoji() {
+        let text = "Hello 👋 World 🌍";
+        let result = truncate_utf8(text, 10);
+        assert!(result.len() <= 10);
+        assert!(result.is_char_boundary(result.len()));
+    }
+
+    #[test]
+    fn test_truncate_utf8_chinese() {
+        let text = "你好世界";
+        let result = truncate_utf8(text, 6);
+        assert!(result.len() <= 6);
+        assert!(result.is_char_boundary(result.len()));
+    }
+
+    #[test]
+    fn test_truncate_utf8_at_boundary() {
+        let text = "🚀";
+        let result = truncate_utf8(text, 2);
+        assert_eq!(result, "");
+    }
+
+    #[test]
+    fn test_truncate_utf8_empty() {
+        let text = "";
+        assert_eq!(truncate_utf8(text, 10), "");
+    }
 }
