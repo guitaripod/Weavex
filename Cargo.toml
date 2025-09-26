@@ -1,6 +1,6 @@
 [package]
 name = "weavex"
-version = "1.0.4"
+version = "1.0.5"
 edition = "2021"
 authors = ["guitaripod"]
 description = "Weave together web search and AI reasoning - an autonomous research agent powered by local LLMs"
