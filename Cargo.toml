@@ -1,6 +1,6 @@
 [package]
 name = "weavex"
-version = "1.0.7"
+version = "1.0.8"
 edition = "2021"
 authors = ["guitaripod"]
 description = "Weave together web search and AI reasoning - an autonomous research agent powered by local LLMs"
@@ -21,6 +21,9 @@ tokio = { version = "1.40", features = ["rt-multi-thread", "macros"] }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 url = "2.5"
+base64 = "0.22"
+regex = "1.10"
+webbrowser = "1.0"
 
 [profile.release]
 lto = true
