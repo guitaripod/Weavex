@@ -56,6 +56,12 @@ pub struct Cli {
     #[arg(short = 'j', long, help = "Output results as JSON")]
     pub json: bool,
 
+    #[arg(
+        long,
+        help = "Output result as a clickable data URL for browser preview"
+    )]
+    pub preview: bool,
+
     #[arg(short = 'v', long, help = "Enable verbose logging")]
     pub verbose: bool,
 
@@ -121,6 +127,12 @@ pub enum Command {
                     chain-of-thought process. Use this flag for faster responses."
         )]
         disable_reasoning: bool,
+
+        #[arg(
+            long,
+            help = "Output result as a clickable data URL for browser preview"
+        )]
+        preview: bool,
     },
 }
 
