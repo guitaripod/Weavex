@@ -1,5 +1,6 @@
 use crate::client::OllamaClient;
 use crate::error::Result;
+use crate::loading::LoadingAnimation;
 use crate::ollama_local::{create_web_fetch_tool, create_web_search_tool, OllamaLocal, ToolCall};
 use serde_json::json;
 use tracing::{info, warn};
@@ -42,6 +43,12 @@ impl Agent {
 
         info!("Starting agent loop with query: {}", user_query);
 
+        let loading = if !self.show_thinking {
+            Some(LoadingAnimation::start())
+        } else {
+            None
+        };
+
         for iteration in 0..self.max_iterations {
             info!("Agent iteration {}/{}", iteration + 1, self.max_iterations);
 
@@ -54,6 +61,10 @@ impl Agent {
                     self.enable_reasoning,
                 )
                 .await?;
+
+            if let Some(ref loader) = loading {
+                loader.pause();
+            }
 
             if let Some(thinking) = &response.message.thinking {
                 if !thinking.is_empty() && self.show_thinking {
@@ -119,8 +130,19 @@ impl Agent {
                 }
             } else {
                 info!("Agent completed without tool calls");
+                if let Some(loader) = loading {
+                    loader.stop();
+                }
                 return Ok(response.message.content);
             }
+
+            if let Some(ref loader) = loading {
+                loader.resume();
+            }
+        }
+
+        if let Some(loader) = loading {
+            loader.stop();
         }
 
         warn!("Agent reached max iterations ({})", self.max_iterations);
