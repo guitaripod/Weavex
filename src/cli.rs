@@ -8,12 +8,23 @@ use clap::{Parser, Subcommand};
     long_about = "Weave combines Ollama's web search API with local LLMs for intelligent, autonomous research.\n\n\
                   Requires an API key from https://ollama.com - set via OLLAMA_API_KEY environment variable or --api-key flag.",
     after_help = "EXAMPLES:\n    \
-                  weavex \"what is rust programming\"\n    \
-                  weavex --max-results 5 \"best practices for async rust\"\n    \
-                  weavex --json \"machine learning trends 2025\"\n    \
-                  weavex fetch https://example.com\n    \
-                  weavex agent \"what are the latest rust async runtime benchmarks\"\n    \
-                  weavex agent --model qwen3:4b \"research topic\"\n    \
+                  # Basic search\n    \
+                  weavex \"what is rust programming\"\n    \n\
+                  # Limit results\n    \
+                  weavex --max-results 5 \"best practices for async rust\"\n    \n\
+                  # JSON output\n    \
+                  weavex --json \"machine learning trends 2025\"\n    \n\
+                  # Fetch a URL\n    \
+                  weavex fetch https://example.com\n    \n\
+                  # AI agent with reasoning (default)\n    \
+                  weavex agent \"what are the latest rust async runtime benchmarks\"\n    \n\
+                  # Use different model\n    \
+                  weavex agent --model qwen3:14b \"research topic\"\n    \n\
+                  # Hide thinking steps\n    \
+                  weavex agent --hide-thinking \"query\"\n    \n\
+                  # Disable reasoning mode\n    \
+                  weavex agent --disable-reasoning \"query\"\n    \n\
+                  # Custom API key\n    \
                   weavex --api-key YOUR_KEY \"query here\""
 )]
 pub struct Cli {
@@ -96,13 +107,17 @@ pub enum Command {
 
         #[arg(
             long,
-            help = "Hide agent thinking steps (show only final result)"
+            help = "Hide agent thinking steps (show only final result). \n\
+                    By default, the agent displays its reasoning process (🧠), \n\
+                    tool calls (🔎 🌐), and responses (💬) for transparency."
         )]
         hide_thinking: bool,
 
         #[arg(
             long,
-            help = "Disable model reasoning (thinking mode)"
+            help = "Disable model reasoning (thinking mode). \n\
+                    By default, reasoning is enabled to show the model's \n\
+                    chain-of-thought process. Use this flag for faster responses."
         )]
         disable_reasoning: bool,
     },

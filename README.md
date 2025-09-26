@@ -12,6 +12,7 @@ Weave together web search and AI reasoning. An autonomous research agent that co
 - **Web Search** - Search the web with natural language queries
 - **Page Fetching** - Fetch and parse content from specific URLs
 - **AI Agent Mode** - Autonomous research with local Ollama models
+- **Reasoning Transparency** - See the model's chain-of-thought process
 - **Fast & Efficient** - Built with Rust for maximum performance
 - **Multiple Output Formats** - Human-readable or JSON output
 - **Configurable** - Environment variables and CLI flags
@@ -92,34 +93,56 @@ weavex --verbose "debugging query"
 Run autonomous research with your local Ollama models:
 
 ```bash
-# Use default model (gpt-oss:20b)
+# Use default model (gpt-oss:20b) with reasoning enabled
 weavex agent "What are the top 3 Rust developments from 2025?"
 
 # Specify a different model
-weavex agent --model llama3.2 "research quantum computing trends"
+weavex agent --model qwen3:14b "research quantum computing trends"
+
+# Hide thinking steps (show only final answer)
+weavex agent --hide-thinking "query"
+
+# Disable model reasoning mode
+weavex agent --disable-reasoning "query"
 
 # Custom Ollama server
 weavex agent --ollama-url http://192.168.1.100:11434 "query"
+
+# Limit agent iterations
+weavex agent --max-iterations 5 "query"
 ```
 
 **How it works:**
 1. Agent uses your local Ollama model for reasoning
-2. Model autonomously decides when to search the web or fetch URLs
-3. Iterates until it has enough information
-4. Synthesizes a comprehensive answer with sources
+2. Model shows its chain-of-thought (🧠) before responding
+3. Autonomously decides when to search the web or fetch URLs
+4. Iterates until it has enough information
+5. Synthesizes a comprehensive answer with sources
+
+**Agent Output:**
+- 🧠 **Reasoning**: Shows the model's thinking process
+- 🔎 **Searching**: Web search operations
+- 🌐 **Fetching**: URL fetch operations
+- 💬 **Response**: Model's synthesized content
+- 📝 **Final Answer**: Complete research summary
 
 **Requirements:**
 - Local Ollama server running (`ollama serve`)
 - Model downloaded locally (`ollama pull gpt-oss:20b`)
 - Ollama API key for web search access
 
+**Recommended Models:**
+- `gpt-oss:20b` - Best balance of speed and reasoning (default)
+- `qwen3:14b` - Good tool-use capabilities
+- `qwen3:4b` - Fastest, runs on laptops
+
 ## Options
 
 <details>
 <summary>Click to expand options</summary>
 
+### Global Options
 ```
-Options:
   -k, --api-key <API_KEY>          Ollama API key (can also use OLLAMA_API_KEY env var)
   -m, --max-results <NUM>          Maximum number of search results to return
   -j, --json                       Output results as JSON
@@ -127,11 +150,22 @@ Options:
       --timeout <SECONDS>          Request timeout in seconds [default: 30]
   -h, --help                       Print help
   -V, --version                    Print version
+```
 
-Commands:
+### Commands
+```
   fetch  Fetch and parse a specific URL
   agent  Run an AI agent with web search capabilities
-   help   Print this message or the help of the given subcommand(s)
+  help   Print this message or the help of the given subcommand(s)
+```
+
+### Agent Options
+```
+  -m, --model <MODEL>              Local Ollama model to use [default: gpt-oss:20b]
+      --ollama-url <URL>           Local Ollama server URL [default: http://localhost:11434]
+      --max-iterations <NUM>       Maximum agent iterations [default: 10]
+      --hide-thinking              Hide agent thinking steps (show only final result)
+      --disable-reasoning          Disable model reasoning (thinking mode)
 ```
 
 </details>
@@ -183,10 +217,27 @@ weavex agent "What are the latest benchmarks for Rust async runtimes?"
 ```
 
 The agent will autonomously:
+- Show its reasoning process (chain-of-thought)
 - Search for relevant benchmark articles
 - Fetch specific benchmark results
 - Compare data from multiple sources
 - Provide a synthesized summary with citations
+
+### Clean Output Mode
+
+Hide the reasoning steps and only show the final answer:
+
+```bash
+weavex agent --hide-thinking "What are the latest benchmarks for Rust async runtimes?"
+```
+
+### Traditional Mode (No Reasoning)
+
+Disable reasoning mode for faster responses:
+
+```bash
+weavex agent --disable-reasoning "What are the latest benchmarks for Rust async runtimes?"
+```
 
 </details>
 
