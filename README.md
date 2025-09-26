@@ -139,6 +139,9 @@ Commands:
 
 ## Examples
 
+<details>
+<summary>Click to expand examples</summary>
+
 ### Research a Topic
 
 ```bash
@@ -175,7 +178,12 @@ The agent will autonomously:
 - Compare data from multiple sources
 - Provide a synthesized summary with citations
 
+</details>
+
 ## Development
+
+<details>
+<summary>Click to expand development info</summary>
 
 ### Build
 
@@ -197,7 +205,12 @@ cargo build --release
 
 The release binary will be optimized with LTO and stripped of debug symbols.
 
+</details>
+
 ## Project Structure
+
+<details>
+<summary>Click to expand project structure</summary>
 
 ```
 src/
@@ -211,7 +224,12 @@ src/
 └── ollama_local.rs - Local Ollama chat API client
 ```
 
+</details>
+
 ## Error Handling
+
+<details>
+<summary>Click to expand error handling details</summary>
 
 The tool provides clear, actionable error messages:
 
@@ -220,12 +238,19 @@ The tool provides clear, actionable error messages:
 - API errors → Status codes and error messages from Ollama
 - Invalid responses → Clear parsing error descriptions
 
+</details>
+
 ## Security
+
+<details>
+<summary>Click to expand security info</summary>
 
 - API keys are never logged or printed
 - `.env` files are gitignored by default
 - Uses `rustls-tls` for secure HTTPS connections
 - No hardcoded credentials or secrets
+
+</details>
 
 ## Contributing
 
