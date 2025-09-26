@@ -20,12 +20,13 @@ impl Agent {
         model: String,
         show_thinking: bool,
         enable_reasoning: bool,
+        max_iterations: usize,
     ) -> Self {
         Self {
             local_ollama,
             web_client,
             model,
-            max_iterations: 10,
+            max_iterations,
             show_thinking,
             enable_reasoning,
         }
@@ -46,7 +47,12 @@ impl Agent {
 
             let response = self
                 .local_ollama
-                .chat(&self.model, messages.clone(), Some(tools.clone()), self.enable_reasoning)
+                .chat(
+                    &self.model,
+                    messages.clone(),
+                    Some(tools.clone()),
+                    self.enable_reasoning,
+                )
                 .await?;
 
             if let Some(thinking) = &response.message.thinking {
@@ -79,11 +85,13 @@ impl Agent {
                     if self.show_thinking {
                         match tool_call.function.name.as_str() {
                             "web_search" => {
-                                let query = tool_call.function.arguments["query"].as_str().unwrap_or("");
+                                let query =
+                                    tool_call.function.arguments["query"].as_str().unwrap_or("");
                                 println!("   🔎 Searching: {}...", query);
                             }
                             "web_fetch" => {
-                                let url = tool_call.function.arguments["url"].as_str().unwrap_or("");
+                                let url =
+                                    tool_call.function.arguments["url"].as_str().unwrap_or("");
                                 println!("   🌐 Fetching: {}...", url);
                             }
                             _ => {}
@@ -92,7 +100,7 @@ impl Agent {
                     let result = self.execute_tool(&tool_call).await?;
 
                     let truncated_result = if result.len() > 8000 {
-                        format!("{}... [truncated]", &result[..8000])
+                        format!("{}... [truncated]", truncate_utf8(&result, 8000))
                     } else {
                         result.clone()
                     };
@@ -124,14 +132,29 @@ impl Agent {
             "web_search" => {
                 let query = tool_call.function.arguments["query"]
                     .as_str()
-                    .unwrap_or("");
+                    .ok_or_else(|| {
+                        crate::error::OllamaError::InvalidResponse(
+                            "Missing 'query' field in web_search".to_string(),
+                        )
+                    })?;
 
-                let max_results = tool_call.function.arguments
+                if query.trim().is_empty() {
+                    return Err(crate::error::OllamaError::InvalidResponse(
+                        "Query cannot be empty".to_string(),
+                    ));
+                }
+
+                let max_results = tool_call
+                    .function
+                    .arguments
                     .get("max_results")
                     .and_then(|v| v.as_u64())
                     .map(|v| v as usize);
 
-                info!("Executing web_search: query='{}', max_results={:?}", query, max_results);
+                info!(
+                    "Executing web_search: query='{}', max_results={:?}",
+                    query, max_results
+                );
 
                 let response = self.web_client.search(query).await?;
 
@@ -152,7 +175,17 @@ impl Agent {
             "web_fetch" => {
                 let url = tool_call.function.arguments["url"]
                     .as_str()
-                    .unwrap_or("");
+                    .ok_or_else(|| {
+                        crate::error::OllamaError::InvalidResponse(
+                            "Missing 'url' field in web_fetch".to_string(),
+                        )
+                    })?;
+
+                if url.trim().is_empty() {
+                    return Err(crate::error::OllamaError::InvalidResponse(
+                        "URL cannot be empty".to_string(),
+                    ));
+                }
 
                 info!("Executing web_fetch: url='{}'", url);
 
@@ -184,4 +217,24 @@ fn truncate_utf8(s: &str, max_bytes: usize) -> &str {
         end -= 1;
     }
     &s[..end]
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_truncate_utf8_agent() {
+        let text = "Hello 🌍 World!";
+        let result = truncate_utf8(text, 10);
+        assert!(result.len() <= 10);
+        assert!(result.is_char_boundary(result.len()));
+    }
+
+    #[test]
+    fn test_truncate_utf8_large_result() {
+        let text = "a".repeat(10000);
+        let result = truncate_utf8(&text, 8000);
+        assert_eq!(result.len(), 8000);
+    }
 }
