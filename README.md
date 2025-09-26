@@ -9,12 +9,12 @@ An autonomous AI research agent that combines Ollama's web search with your loca
 
 ## Features
 
-- **🤖 Autonomous Agent** - Local LLM decides when to search, fetch, and synthesize
-- **🧠 Reasoning Transparency** - See the model's chain-of-thought process in real-time
-- **🔍 Smart Web Research** - Autonomous web search and page fetching with context
-- **⚡ Fast & Efficient** - Built with Rust for maximum performance
-- **🎯 Production Ready** - Comprehensive error handling and logging
-- **🔧 Highly Configurable** - Multiple models, output formats, and options
+- **Autonomous Agent** - Local LLM decides when to search, fetch, and synthesize
+- **Reasoning Transparency** - See the model's chain-of-thought process in real-time
+- **Smart Web Research** - Autonomous web search and page fetching with context
+- **Fast & Efficient** - Built with Rust for maximum performance
+- **Production Ready** - Comprehensive error handling and logging
+- **Highly Configurable** - Multiple models, output formats, and options
 
 ## Installation
 
