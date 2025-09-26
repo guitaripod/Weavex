@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Weavex is an autonomous research agent combining Ollama's web search API with local LLM models. Built in Rust for AI-powered web research with reasoning transparency.
+Weavex is an autonomous research agent combining Ollama's web search API with local LLM models. Built in Rust for AI-powered web research with clean output and optional reasoning transparency.
 
 ## Bash Commands
 
@@ -34,10 +34,12 @@ cargo run -- fetch https://example.com
 **Agent workflow (`agent.rs`):**
 - Local Ollama model decides which tools to call autonomously
 - Tools: `web_search` and `web_fetch` (defined in `ollama_local.rs`)
-- Iterates up to 10 times, truncates results to 8000 chars for context management
+- Iterates up to 50 times by default, truncates results to 8000 chars for context management
 - Reasoning mode enabled by default (`think: true` parameter)
+- Default mode: shows only final answer with loading animation (🧵 Weaving...)
+- `--show-thinking` flag: displays reasoning (🧠), tool calls (🔎 🌐), and responses (💬)
 
-**Key quirk:** Agent's thinking output in `ChatMessage.thinking` field, displayed with 🧠 prefix
+**Key quirk:** Agent's thinking output in `ChatMessage.thinking` field, only displayed when `--show-thinking` is used
 
 ## Environment Variables
 
