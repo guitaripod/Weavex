@@ -56,7 +56,7 @@ async fn main() -> Result<()> {
             model,
             ollama_url,
             max_iterations,
-            hide_thinking,
+            show_thinking,
             disable_reasoning,
         }) => {
             info!("Starting agent with model: {}", model);
@@ -69,7 +69,7 @@ async fn main() -> Result<()> {
                 local_ollama,
                 client,
                 model,
-                !hide_thinking,
+                show_thinking,
                 !disable_reasoning,
                 max_iterations,
             );

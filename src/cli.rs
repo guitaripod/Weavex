@@ -16,12 +16,12 @@ use clap::{Parser, Subcommand};
                   weavex --json \"machine learning trends 2025\"\n    \n\
                   # Fetch a URL\n    \
                   weavex fetch https://example.com\n    \n\
-                  # AI agent with reasoning (default)\n    \
+                  # AI agent (default shows only final answer with loading animation)\n    \
                   weavex agent \"what are the latest rust async runtime benchmarks\"\n    \n\
                   # Use different model\n    \
                   weavex agent --model qwen3:14b \"research topic\"\n    \n\
-                  # Hide thinking steps\n    \
-                  weavex agent --hide-thinking \"query\"\n    \n\
+                  # Show thinking steps and reasoning process\n    \
+                  weavex agent --show-thinking \"query\"\n    \n\
                   # Disable reasoning mode\n    \
                   weavex agent --disable-reasoning \"query\"\n    \n\
                   # Custom API key\n    \
@@ -107,11 +107,12 @@ pub enum Command {
 
         #[arg(
             long,
-            help = "Hide agent thinking steps (show only final result). \n\
-                    By default, the agent displays its reasoning process (🧠), \n\
+            help = "Show agent thinking steps and reasoning process. \n\
+                    By default, only the final answer is displayed with a loading animation. \n\
+                    Use this flag to see the model's reasoning (🧠), \n\
                     tool calls (🔎 🌐), and responses (💬) for transparency."
         )]
-        hide_thinking: bool,
+        show_thinking: bool,
 
         #[arg(
             long,
