@@ -4,6 +4,7 @@ mod client;
 mod config;
 mod error;
 mod formatter;
+mod loading;
 mod ollama_local;
 
 use anyhow::{Context, Result};
