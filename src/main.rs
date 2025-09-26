@@ -54,7 +54,7 @@ async fn main() -> Result<()> {
             query,
             model,
             ollama_url,
-            max_iterations: _,
+            max_iterations,
             hide_thinking,
             disable_reasoning,
         }) => {
@@ -64,21 +64,25 @@ async fn main() -> Result<()> {
             let local_ollama = ollama_local::OllamaLocal::new(Some(ollama_url))
                 .context("Failed to create local Ollama client")?;
 
-            let agent = agent::Agent::new(local_ollama, client, model, !hide_thinking, !disable_reasoning);
+            let agent = agent::Agent::new(
+                local_ollama,
+                client,
+                model,
+                !hide_thinking,
+                !disable_reasoning,
+                max_iterations,
+            );
 
             println!("🔍 Researching: {}\n", query);
 
-            let result = agent
-                .run(&query)
-                .await
-                .context("Agent execution failed")?;
+            let result = agent.run(&query).await.context("Agent execution failed")?;
 
             println!("\n📝 Final Answer:\n{}", result);
         }
         None => {
-            let query = cli
-                .get_query()
-                .context("Query required. Use 'weavex <query>' or 'weavex --help' for usage information")?;
+            let query = cli.get_query().context(
+                "Query required. Use 'weavex <query>' or 'weavex --help' for usage information",
+            )?;
 
             info!("Searching for: {}", query);
             let response = client
