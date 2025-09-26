@@ -3,7 +3,7 @@
 [![Crates.io](https://img.shields.io/crates/v/weavex)](https://crates.io/crates/weavex)
 [![Crates.io](https://img.shields.io/crates/d/weavex)](https://crates.io/crates/weavex)
 [![CI](https://github.com/guitaripod/Weavex/actions/workflows/ci.yml/badge.svg)](https://github.com/guitaripod/Weavex/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 An autonomous AI research agent that combines Ollama's web search with your local LLMs. Watch as your model reasons through complex queries, autonomously searches the web, and synthesizes intelligent answers with citations.
 
