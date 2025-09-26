@@ -5,6 +5,7 @@ mod config;
 mod error;
 mod formatter;
 mod loading;
+mod markdown_preview;
 mod ollama_local;
 
 use anyhow::{Context, Result};
@@ -48,8 +49,14 @@ async fn main() -> Result<()> {
             info!("Fetching URL: {}", url);
             let response = client.fetch(&url).await.context("Failed to fetch URL")?;
 
-            let output = format_fetch_response(&response, cli.json);
-            println!("{}", output);
+            if cli.preview {
+                markdown_preview::open_markdown_in_browser(&response.content)
+                    .context("Failed to open browser")?;
+                println!("🌐 Opened result in browser");
+            } else {
+                let output = format_fetch_response(&response, cli.json);
+                println!("{}", output);
+            }
         }
         Some(Command::Agent {
             query,
@@ -58,6 +65,7 @@ async fn main() -> Result<()> {
             max_iterations,
             show_thinking,
             disable_reasoning,
+            preview,
         }) => {
             info!("Starting agent with model: {}", model);
             println!("🤖 Initializing agent with model: {}\n", model);
@@ -78,7 +86,13 @@ async fn main() -> Result<()> {
 
             let result = agent.run(&query).await.context("Agent execution failed")?;
 
-            println!("\n📝 Final Answer:\n{}", result);
+            if preview {
+                markdown_preview::open_markdown_in_browser(&result)
+                    .context("Failed to open browser")?;
+                println!("\n📝 Opened result in browser");
+            } else {
+                println!("\n📝 Final Answer:\n{}", result);
+            }
         }
         None => {
             let query = cli.get_query().context(
@@ -91,8 +105,20 @@ async fn main() -> Result<()> {
                 .await
                 .context("Search request failed")?;
 
-            let output = format_search_results(&response, cli.json);
-            println!("{}", output);
+            if cli.preview {
+                let mut markdown = format!("# Search Results\n\nFound {} results:\n\n", response.results.len());
+                for (idx, result) in response.results.iter().enumerate() {
+                    markdown.push_str(&format!("## {}. {}\n\n", idx + 1, result.title));
+                    markdown.push_str(&format!("**URL:** [{}]({})\n\n", result.url, result.url));
+                    markdown.push_str(&format!("{}\n\n", result.content));
+                }
+                markdown_preview::open_markdown_in_browser(&markdown)
+                    .context("Failed to open browser")?;
+                println!("🔍 Opened results in browser");
+            } else {
+                let output = format_search_results(&response, cli.json);
+                println!("{}", output);
+            }
         }
     }
 
