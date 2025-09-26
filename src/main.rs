@@ -56,6 +56,7 @@ async fn main() -> Result<()> {
             ollama_url,
             max_iterations: _,
             hide_thinking,
+            disable_reasoning,
         }) => {
             info!("Starting agent with model: {}", model);
             println!("🤖 Initializing agent with model: {}\n", model);
@@ -63,7 +64,7 @@ async fn main() -> Result<()> {
             let local_ollama = ollama_local::OllamaLocal::new(Some(ollama_url))
                 .context("Failed to create local Ollama client")?;
 
-            let agent = agent::Agent::new(local_ollama, client, model, !hide_thinking);
+            let agent = agent::Agent::new(local_ollama, client, model, !hide_thinking, !disable_reasoning);
 
             println!("🔍 Researching: {}\n", query);
 

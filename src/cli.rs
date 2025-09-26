@@ -99,6 +99,12 @@ pub enum Command {
             help = "Hide agent thinking steps (show only final result)"
         )]
         hide_thinking: bool,
+
+        #[arg(
+            long,
+            help = "Disable model reasoning (thinking mode)"
+        )]
+        disable_reasoning: bool,
     },
 }
 
