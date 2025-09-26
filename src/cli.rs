@@ -93,6 +93,12 @@ pub enum Command {
             help = "Maximum agent iterations"
         )]
         max_iterations: usize,
+
+        #[arg(
+            long,
+            help = "Hide agent thinking steps (show only final result)"
+        )]
+        hide_thinking: bool,
     },
 }
 

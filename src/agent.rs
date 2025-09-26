@@ -9,6 +9,7 @@ pub struct Agent {
     web_client: OllamaClient,
     model: String,
     max_iterations: usize,
+    show_thinking: bool,
 }
 
 impl Agent {
@@ -16,12 +17,14 @@ impl Agent {
         local_ollama: OllamaLocal,
         web_client: OllamaClient,
         model: String,
+        show_thinking: bool,
     ) -> Self {
         Self {
             local_ollama,
             web_client,
             model,
             max_iterations: 10,
+            show_thinking,
         }
     }
 
@@ -46,6 +49,9 @@ impl Agent {
             let content = &response.message.content;
             if !content.is_empty() {
                 info!("Model response: {}", &content[..content.len().min(100)]);
+                if self.show_thinking {
+                    println!("\n💭 {}", content);
+                }
             }
 
             messages.push(json!({
@@ -58,6 +64,19 @@ impl Agent {
                 info!("Model requested {} tool call(s)", tool_calls.len());
 
                 for tool_call in tool_calls {
+                    if self.show_thinking {
+                        match tool_call.function.name.as_str() {
+                            "web_search" => {
+                                let query = tool_call.function.arguments["query"].as_str().unwrap_or("");
+                                println!("   🔎 Searching: {}...", query);
+                            }
+                            "web_fetch" => {
+                                let url = tool_call.function.arguments["url"].as_str().unwrap_or("");
+                                println!("   🌐 Fetching: {}...", url);
+                            }
+                            _ => {}
+                        }
+                    }
                     let result = self.execute_tool(&tool_call).await?;
 
                     let truncated_result = if result.len() > 8000 {
