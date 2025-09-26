@@ -30,8 +30,11 @@ pub struct SearchResponse {
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct FetchResponse {
+    #[serde(default)]
     pub title: String,
+    #[serde(default)]
     pub content: String,
+    #[serde(default)]
     pub links: Vec<String>,
 }
 
