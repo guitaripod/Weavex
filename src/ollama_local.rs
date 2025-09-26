@@ -50,6 +50,8 @@ struct ChatRequest {
     #[serde(skip_serializing_if = "Option::is_none")]
     tools: Option<Vec<Tool>>,
     stream: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    think: Option<bool>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -64,6 +66,8 @@ pub struct ChatMessage {
     pub content: String,
     #[serde(default)]
     pub tool_calls: Option<Vec<ToolCall>>,
+    #[serde(default)]
+    pub thinking: Option<String>,
 }
 
 pub struct OllamaLocal {
@@ -90,6 +94,7 @@ impl OllamaLocal {
         model: &str,
         messages: Vec<serde_json::Value>,
         tools: Option<Vec<Tool>>,
+        think: bool,
     ) -> Result<ChatResponse> {
         let url = format!("{}/api/chat", self.base_url);
 
@@ -100,6 +105,7 @@ impl OllamaLocal {
             messages,
             tools,
             stream: false,
+            think: if think { Some(true) } else { None },
         };
 
         let response = self
