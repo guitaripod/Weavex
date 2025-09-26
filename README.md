@@ -27,7 +27,7 @@ cd weavex
 cargo install --path .
 ```
 
-### From crates.io (coming soon)
+### From crates.io
 
 ```bash
 cargo install weavex
