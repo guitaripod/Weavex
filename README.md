@@ -115,6 +115,9 @@ weavex agent --ollama-url http://192.168.1.100:11434 "query"
 
 ## Options
 
+<details>
+<summary>Click to expand options</summary>
+
 ```
 Options:
   -k, --api-key <API_KEY>          Ollama API key (can also use OLLAMA_API_KEY env var)
@@ -128,14 +131,21 @@ Options:
 Commands:
   fetch  Fetch and parse a specific URL
   agent  Run an AI agent with web search capabilities
-  help   Print this message or the help of the given subcommand(s)
+   help   Print this message or the help of the given subcommand(s)
 ```
 
+</details>
+
 ## Environment Variables
+
+<details>
+<summary>Click to expand environment variables</summary>
 
 - `OLLAMA_API_KEY` - Your Ollama API key (required)
 - `OLLAMA_BASE_URL` - Base URL for the API (default: `https://ollama.com/api`)
 - `OLLAMA_TIMEOUT` - Request timeout in seconds (default: 30)
+
+</details>
 
 ## Examples
 
