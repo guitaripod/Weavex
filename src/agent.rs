@@ -10,6 +10,7 @@ pub struct Agent {
     model: String,
     max_iterations: usize,
     show_thinking: bool,
+    enable_reasoning: bool,
 }
 
 impl Agent {
@@ -18,6 +19,7 @@ impl Agent {
         web_client: OllamaClient,
         model: String,
         show_thinking: bool,
+        enable_reasoning: bool,
     ) -> Self {
         Self {
             local_ollama,
@@ -25,6 +27,7 @@ impl Agent {
             model,
             max_iterations: 10,
             show_thinking,
+            enable_reasoning,
         }
     }
 
@@ -43,14 +46,23 @@ impl Agent {
 
             let response = self
                 .local_ollama
-                .chat(&self.model, messages.clone(), Some(tools.clone()))
+                .chat(&self.model, messages.clone(), Some(tools.clone()), self.enable_reasoning)
                 .await?;
+
+            if let Some(thinking) = &response.message.thinking {
+                if !thinking.is_empty() && self.show_thinking {
+                    info!("Model thinking: {}", &thinking[..thinking.len().min(100)]);
+                    println!("\n🧠 Reasoning:");
+                    println!("   {}", thinking.replace("\n", "\n   "));
+                }
+            }
 
             let content = &response.message.content;
             if !content.is_empty() {
                 info!("Model response: {}", &content[..content.len().min(100)]);
                 if self.show_thinking {
-                    println!("\n💭 {}", content);
+                    println!("\n💬 Response:");
+                    println!("   {}", content.replace("\n", "\n   "));
                 }
             }
 
