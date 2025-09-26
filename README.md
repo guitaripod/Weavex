@@ -10,7 +10,7 @@ An autonomous AI research agent that combines Ollama's web search with your loca
 ## Features
 
 - **Autonomous Agent** - Local LLM decides when to search, fetch, and synthesize
-- **Reasoning Transparency** - See the model's chain-of-thought process in real-time
+- **Clean Output** - Shows final answers with a loading animation; optionally view full reasoning
 - **Smart Web Research** - Autonomous web search and page fetching with context
 - **Fast & Efficient** - Built with Rust for maximum performance
 - **Production Ready** - Comprehensive error handling and logging
@@ -55,14 +55,14 @@ echo "OLLAMA_API_KEY=your_api_key_here" > .env
 Run autonomous research with your local Ollama models:
 
 ```bash
-# Use default model (gpt-oss:20b) with reasoning enabled
+# Use default model (gpt-oss:20b) - shows final answer with loading animation
 weavex agent "What are the top 3 Rust developments from 2025?"
 
 # Specify a different model
 weavex agent --model qwen3:14b "research quantum computing trends"
 
-# Hide thinking steps (show only final answer)
-weavex agent --hide-thinking "query"
+# Show thinking steps and reasoning process for transparency
+weavex agent --show-thinking "query"
 
 # Disable model reasoning mode
 weavex agent --disable-reasoning "query"
@@ -76,17 +76,20 @@ weavex agent --max-iterations 5 "query"
 
 **How it works:**
 1. Agent uses your local Ollama model for reasoning
-2. Model shows its chain-of-thought (🧠) before responding
+2. Shows a loading animation (🧵 Weaving...) while working
 3. Autonomously decides when to search the web or fetch URLs
 4. Iterates until it has enough information
 5. Synthesizes a comprehensive answer with sources
 
 **Agent Output:**
+- 🧵 **Weaving...**: Loading animation (default mode)
+- 📝 **Final Answer**: Complete research summary
+
+**With --show-thinking flag:**
 - 🧠 **Reasoning**: Shows the model's thinking process
 - 🔎 **Searching**: Web search operations
 - 🌐 **Fetching**: URL fetch operations
 - 💬 **Response**: Model's synthesized content
-- 📝 **Final Answer**: Complete research summary
 
 **Requirements:**
 - Local Ollama server running (`ollama serve`)
@@ -166,8 +169,8 @@ weavex --verbose "debugging query"
 ```
   -m, --model <MODEL>              Local Ollama model to use [default: gpt-oss:20b]
       --ollama-url <URL>           Local Ollama server URL [default: http://localhost:11434]
-      --max-iterations <NUM>       Maximum agent iterations [default: 10]
-      --hide-thinking              Hide agent thinking steps (show only final result)
+      --max-iterations <NUM>       Maximum agent iterations [default: 50]
+      --show-thinking              Show agent thinking steps and reasoning process
       --disable-reasoning          Disable model reasoning (thinking mode)
 ```
 
@@ -193,18 +196,18 @@ weavex agent "What are the latest benchmarks for Rust async runtimes?"
 ```
 
 The agent will autonomously:
-- Show its reasoning process (chain-of-thought)
+- Display a loading animation while working
 - Search for relevant benchmark articles
 - Fetch specific benchmark results
 - Compare data from multiple sources
 - Provide a synthesized summary with citations
 
-### Clean Output Mode
+### Verbose Mode
 
-Hide the reasoning steps and only show the final answer:
+Show the reasoning steps and full transparency:
 
 ```bash
-weavex agent --hide-thinking "What are the latest benchmarks for Rust async runtimes?"
+weavex agent --show-thinking "What are the latest benchmarks for Rust async runtimes?"
 ```
 
 ### Traditional Mode (No Reasoning)
