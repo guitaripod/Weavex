@@ -3,6 +3,7 @@ use crate::error::{OllamaError, Result};
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use tracing::{debug, instrument};
+use url::Url;
 
 #[derive(Debug, Serialize)]
 struct SearchRequest {
@@ -55,6 +56,12 @@ impl OllamaClient {
 
     #[instrument(skip(self))]
     pub async fn search(&self, query: &str) -> Result<SearchResponse> {
+        if query.trim().is_empty() {
+            return Err(OllamaError::InvalidResponse(
+                "Search query cannot be empty".to_string(),
+            ));
+        }
+
         let url = format!("{}/web_search", self.config.base_url);
 
         debug!("Sending search request to: {}", url);
@@ -95,6 +102,16 @@ impl OllamaClient {
 
     #[instrument(skip(self))]
     pub async fn fetch(&self, target_url: &str) -> Result<FetchResponse> {
+        let parsed_url = Url::parse(target_url)
+            .map_err(|e| OllamaError::InvalidUrl(format!("Invalid URL '{}': {}", target_url, e)))?;
+
+        if !["http", "https"].contains(&parsed_url.scheme()) {
+            return Err(OllamaError::InvalidUrl(format!(
+                "URL must use http or https scheme, got: {}",
+                parsed_url.scheme()
+            )));
+        }
+
         let url = format!("{}/web_fetch", self.config.base_url);
 
         debug!("Sending fetch request to: {}", url);
@@ -130,5 +147,60 @@ impl OllamaClient {
         })?;
 
         Ok(fetch_response)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::time::Duration;
+
+    fn create_test_client() -> OllamaClient {
+        let config = Config::new("test_key".to_string()).with_timeout(Duration::from_secs(30));
+        OllamaClient::new(config).unwrap()
+    }
+
+    #[test]
+    fn test_empty_query_validation() {
+        use tokio::runtime::Runtime;
+        let rt = Runtime::new().unwrap();
+        let client = create_test_client();
+
+        let result = rt.block_on(client.search(""));
+        assert!(result.is_err());
+        assert!(result.unwrap_err().to_string().contains("empty"));
+    }
+
+    #[test]
+    fn test_whitespace_query_validation() {
+        use tokio::runtime::Runtime;
+        let rt = Runtime::new().unwrap();
+        let client = create_test_client();
+
+        let result = rt.block_on(client.search("   "));
+        assert!(result.is_err());
+        assert!(result.unwrap_err().to_string().contains("empty"));
+    }
+
+    #[test]
+    fn test_invalid_url_validation() {
+        use tokio::runtime::Runtime;
+        let rt = Runtime::new().unwrap();
+        let client = create_test_client();
+
+        let result = rt.block_on(client.fetch("not a url"));
+        assert!(result.is_err());
+        assert!(result.unwrap_err().to_string().contains("Invalid URL"));
+    }
+
+    #[test]
+    fn test_invalid_scheme_validation() {
+        use tokio::runtime::Runtime;
+        let rt = Runtime::new().unwrap();
+        let client = create_test_client();
+
+        let result = rt.block_on(client.fetch("ftp://example.com"));
+        assert!(result.is_err());
+        assert!(result.unwrap_err().to_string().contains("scheme"));
     }
 }
