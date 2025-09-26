@@ -5,18 +5,16 @@
 [![CI](https://github.com/guitaripod/Weavex/actions/workflows/ci.yml/badge.svg)](https://github.com/guitaripod/Weavex/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Weave together web search and AI reasoning. An autonomous research agent that combines Ollama's web search with your local LLMs to deliver intelligent, cited answers.
+An autonomous AI research agent that combines Ollama's web search with your local LLMs. Watch as your model reasons through complex queries, autonomously searches the web, and synthesizes intelligent answers with citations.
 
 ## Features
 
-- **Web Search** - Search the web with natural language queries
-- **Page Fetching** - Fetch and parse content from specific URLs
-- **AI Agent Mode** - Autonomous research with local Ollama models
-- **Reasoning Transparency** - See the model's chain-of-thought process
-- **Fast & Efficient** - Built with Rust for maximum performance
-- **Multiple Output Formats** - Human-readable or JSON output
-- **Configurable** - Environment variables and CLI flags
-- **Production Ready** - Comprehensive error handling and logging
+- **🤖 Autonomous Agent** - Local LLM decides when to search, fetch, and synthesize
+- **🧠 Reasoning Transparency** - See the model's chain-of-thought process in real-time
+- **🔍 Smart Web Research** - Autonomous web search and page fetching with context
+- **⚡ Fast & Efficient** - Built with Rust for maximum performance
+- **🎯 Production Ready** - Comprehensive error handling and logging
+- **🔧 Highly Configurable** - Multiple models, output formats, and options
 
 ## Installation
 
@@ -38,7 +36,7 @@ cargo install weavex
 
 You need an Ollama API key to use this tool. Get one at [ollama.com/settings/keys](https://ollama.com/settings/keys).
 
-## Usage
+## Quick Start
 
 ### Set up your API key
 
@@ -52,43 +50,7 @@ Or create a `.env` file:
 echo "OLLAMA_API_KEY=your_api_key_here" > .env
 ```
 
-### Basic Search
-
-```bash
-weavex "what is rust programming"
-```
-
-### Limit Results
-
-```bash
-weavex --max-results 5 "best practices for async rust"
-```
-
-### JSON Output
-
-```bash
-weavex --json "machine learning trends 2025"
-```
-
-### Fetch a Specific URL
-
-```bash
-weavex fetch https://example.com
-```
-
-### Pass API Key via Flag
-
-```bash
-weavex --api-key YOUR_KEY "query here"
-```
-
-### Verbose Logging
-
-```bash
-weavex --verbose "debugging query"
-```
-
-### AI Agent Mode
+### AI Agent Mode (Recommended)
 
 Run autonomous research with your local Ollama models:
 
@@ -135,6 +97,47 @@ weavex agent --max-iterations 5 "query"
 - `gpt-oss:20b` - Best balance of speed and reasoning (default)
 - `qwen3:14b` - Good tool-use capabilities
 - `qwen3:4b` - Fastest, runs on laptops
+
+<details>
+<summary><h3>Direct API Access (Simple Mode)</h3></summary>
+
+For quick searches without the agent, you can use the direct API mode:
+
+### Basic Search
+
+```bash
+weavex "what is rust programming"
+```
+
+### Limit Results
+
+```bash
+weavex --max-results 5 "best practices for async rust"
+```
+
+### JSON Output
+
+```bash
+weavex --json "machine learning trends 2025"
+```
+
+### Fetch a Specific URL
+
+```bash
+weavex fetch https://example.com
+```
+
+### Advanced Options
+
+```bash
+# Pass API key via flag
+weavex --api-key YOUR_KEY "query here"
+
+# Verbose logging
+weavex --verbose "debugging query"
+```
+
+</details>
 
 ## Options
 
@@ -183,33 +186,6 @@ weavex agent --max-iterations 5 "query"
 
 ## Examples
 
-<details>
-<summary>Click to expand examples</summary>
-
-### Research a Topic
-
-```bash
-weavex "latest rust async runtime benchmarks"
-```
-
-### Compare Technologies
-
-```bash
-weavex --max-results 10 "tokio vs async-std performance"
-```
-
-### Extract Page Content
-
-```bash
-weavex fetch https://blog.rust-lang.org/
-```
-
-### Integrate with Other Tools
-
-```bash
-weavex --json "rust web frameworks" | jq '.results[0].url'
-```
-
 ### AI Agent Research
 
 ```bash
@@ -237,6 +213,33 @@ Disable reasoning mode for faster responses:
 
 ```bash
 weavex agent --disable-reasoning "What are the latest benchmarks for Rust async runtimes?"
+```
+
+<details>
+<summary><h3>Simple Mode Examples</h3></summary>
+
+### Research a Topic
+
+```bash
+weavex "latest rust async runtime benchmarks"
+```
+
+### Compare Technologies
+
+```bash
+weavex --max-results 10 "tokio vs async-std performance"
+```
+
+### Extract Page Content
+
+```bash
+weavex fetch https://blog.rust-lang.org/
+```
+
+### Integrate with Other Tools
+
+```bash
+weavex --json "rust web frameworks" | jq '.results[0].url'
 ```
 
 </details>
