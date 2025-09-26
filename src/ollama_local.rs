@@ -3,21 +3,6 @@ use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use tracing::{debug, instrument};
 
-#[derive(Debug, Serialize, Clone)]
-pub struct Message {
-    pub role: String,
-    pub content: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub tool_calls: Option<Vec<ToolCall>>,
-}
-
-#[derive(Debug, Serialize, Clone)]
-pub struct ToolMessage {
-    pub role: String,
-    pub content: String,
-    pub tool_name: String,
-}
-
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ToolCall {
     pub function: FunctionCall,
@@ -57,11 +42,13 @@ struct ChatRequest {
 #[derive(Debug, Deserialize)]
 pub struct ChatResponse {
     pub message: ChatMessage,
+    #[allow(dead_code)]
     pub done: bool,
 }
 
 #[derive(Debug, Deserialize)]
 pub struct ChatMessage {
+    #[allow(dead_code)]
     pub role: String,
     pub content: String,
     #[serde(default)]
@@ -108,12 +95,7 @@ impl OllamaLocal {
             think: if think { Some(true) } else { None },
         };
 
-        let response = self
-            .client
-            .post(&url)
-            .json(&request)
-            .send()
-            .await?;
+        let response = self.client.post(&url).json(&request).send().await?;
 
         let status = response.status();
 
