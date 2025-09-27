@@ -24,6 +24,8 @@ url = "2.5"
 base64 = "0.22"
 regex = "1.10"
 webbrowser = "1.0"
+pulldown-cmark = "0.12"
+syntect = "5.2"
 
 [profile.release]
 lto = true
