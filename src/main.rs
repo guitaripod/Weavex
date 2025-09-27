@@ -49,7 +49,7 @@ async fn main() -> Result<()> {
             info!("Fetching URL: {}", url);
             let response = client.fetch(&url).await.context("Failed to fetch URL")?;
 
-            if cli.preview {
+            if !cli.no_preview {
                 markdown_preview::open_markdown_in_browser(&response.content)
                     .context("Failed to open browser")?;
                 println!("🌐 Opened result in browser");
@@ -65,7 +65,7 @@ async fn main() -> Result<()> {
             max_iterations,
             show_thinking,
             disable_reasoning,
-            preview,
+            no_preview,
         }) => {
             info!("Starting agent with model: {}", model);
             println!("🤖 Initializing agent with model: {}\n", model);
@@ -86,7 +86,7 @@ async fn main() -> Result<()> {
 
             let result = agent.run(&query).await.context("Agent execution failed")?;
 
-            if preview {
+            if !no_preview {
                 markdown_preview::open_markdown_in_browser(&result)
                     .context("Failed to open browser")?;
                 println!("\n📝 Opened result in browser");
@@ -105,8 +105,11 @@ async fn main() -> Result<()> {
                 .await
                 .context("Search request failed")?;
 
-            if cli.preview {
-                let mut markdown = format!("# Search Results\n\nFound {} results:\n\n", response.results.len());
+            if !cli.no_preview {
+                let mut markdown = format!(
+                    "# Search Results\n\nFound {} results:\n\n",
+                    response.results.len()
+                );
                 for (idx, result) in response.results.iter().enumerate() {
                     markdown.push_str(&format!("## {}. {}\n\n", idx + 1, result.title));
                     markdown.push_str(&format!("**URL:** [{}]({})\n\n", result.url, result.url));

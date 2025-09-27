@@ -8,16 +8,20 @@ use clap::{Parser, Subcommand};
     long_about = "Weave combines Ollama's web search API with local LLMs for intelligent, autonomous research.\n\n\
                   Requires an API key from https://ollama.com - set via OLLAMA_API_KEY environment variable or --api-key flag.",
     after_help = "EXAMPLES:\n    \
-                  # Basic search\n    \
+                  # Basic search (opens in browser by default)\n    \
                   weavex \"what is rust programming\"\n    \n\
+                  # Disable browser preview, show in terminal\n    \
+                  weavex --no-preview \"what is rust programming\"\n    \n\
                   # Limit results\n    \
                   weavex --max-results 5 \"best practices for async rust\"\n    \n\
                   # JSON output\n    \
                   weavex --json \"machine learning trends 2025\"\n    \n\
                   # Fetch a URL\n    \
                   weavex fetch https://example.com\n    \n\
-                  # AI agent (default shows only final answer with loading animation)\n    \
+                  # AI agent (opens result in browser by default)\n    \
                   weavex agent \"what are the latest rust async runtime benchmarks\"\n    \n\
+                  # Agent with terminal output only\n    \
+                  weavex agent --no-preview \"query\"\n    \n\
                   # Use different model\n    \
                   weavex agent --model qwen3:14b \"research topic\"\n    \n\
                   # Show thinking steps and reasoning process\n    \
@@ -56,11 +60,8 @@ pub struct Cli {
     #[arg(short = 'j', long, help = "Output results as JSON")]
     pub json: bool,
 
-    #[arg(
-        long,
-        help = "Output result as a clickable data URL for browser preview"
-    )]
-    pub preview: bool,
+    #[arg(long, help = "Disable browser preview (preview is enabled by default)")]
+    pub no_preview: bool,
 
     #[arg(short = 'v', long, help = "Enable verbose logging")]
     pub verbose: bool,
@@ -128,11 +129,8 @@ pub enum Command {
         )]
         disable_reasoning: bool,
 
-        #[arg(
-            long,
-            help = "Output result as a clickable data URL for browser preview"
-        )]
-        preview: bool,
+        #[arg(long, help = "Disable browser preview (preview is enabled by default)")]
+        no_preview: bool,
     },
 }
 
