@@ -55,8 +55,11 @@ echo "OLLAMA_API_KEY=your_api_key_here" > .env
 Run autonomous research with your local Ollama models:
 
 ```bash
-# Use default model (gpt-oss:20b) - shows final answer with loading animation
+# Use default model (gpt-oss:20b) - opens result in browser by default
 weavex agent "What are the top 3 Rust developments from 2025?"
+
+# Disable browser preview, show in terminal
+weavex agent --no-preview "query"
 
 # Specify a different model
 weavex agent --model qwen3:14b "research quantum computing trends"
@@ -79,11 +82,11 @@ weavex agent --max-iterations 5 "query"
 2. Shows a loading animation (🧵 Weaving...) while working
 3. Autonomously decides when to search the web or fetch URLs
 4. Iterates until it has enough information
-5. Synthesizes a comprehensive answer with sources
+5. Opens the final result in your browser with markdown rendering (use --no-preview for terminal output)
 
 **Agent Output:**
-- 🧵 **Weaving...**: Loading animation (default mode)
-- 📝 **Final Answer**: Complete research summary
+- 🧵 **Weaving...**: Loading animation while agent works
+- 🌐 **Browser Preview**: Opens result in browser by default (use --no-preview for terminal output)
 
 **With --show-thinking flag:**
 - 🧠 **Reasoning**: Shows the model's thinking process
@@ -109,7 +112,11 @@ For quick searches without the agent, you can use the direct API mode:
 ### Basic Search
 
 ```bash
+# Opens results in browser by default
 weavex "what is rust programming"
+
+# Show results in terminal
+weavex --no-preview "what is rust programming"
 ```
 
 ### Limit Results
@@ -152,6 +159,7 @@ weavex --verbose "debugging query"
   -k, --api-key <API_KEY>          Ollama API key (can also use OLLAMA_API_KEY env var)
   -m, --max-results <NUM>          Maximum number of search results to return
   -j, --json                       Output results as JSON
+      --no-preview                 Disable browser preview (preview is enabled by default)
   -v, --verbose                    Enable verbose logging
       --timeout <SECONDS>          Request timeout in seconds [default: 30]
   -h, --help                       Print help
@@ -172,6 +180,7 @@ weavex --verbose "debugging query"
       --max-iterations <NUM>       Maximum agent iterations [default: 50]
       --show-thinking              Show agent thinking steps and reasoning process
       --disable-reasoning          Disable model reasoning (thinking mode)
+      --no-preview                 Disable browser preview (preview is enabled by default)
 ```
 
 </details>
@@ -192,6 +201,7 @@ weavex --verbose "debugging query"
 ### AI Agent Research
 
 ```bash
+# Opens result in browser by default
 weavex agent "What are the latest benchmarks for Rust async runtimes?"
 ```
 
@@ -200,7 +210,7 @@ The agent will autonomously:
 - Search for relevant benchmark articles
 - Fetch specific benchmark results
 - Compare data from multiple sources
-- Provide a synthesized summary with citations
+- Open the final result in your browser with markdown rendering
 
 ### Verbose Mode
 
@@ -208,6 +218,14 @@ Show the reasoning steps and full transparency:
 
 ```bash
 weavex agent --show-thinking "What are the latest benchmarks for Rust async runtimes?"
+```
+
+### Terminal Output Mode
+
+Disable browser preview to see output in terminal:
+
+```bash
+weavex agent --no-preview "What are the latest benchmarks for Rust async runtimes?"
 ```
 
 ### Traditional Mode (No Reasoning)
