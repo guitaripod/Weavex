@@ -145,8 +145,36 @@ impl Agent {
             loader.stop();
         }
 
-        warn!("Agent reached max iterations ({})", self.max_iterations);
-        Ok("Maximum iterations reached. Please try rephrasing your query.".to_string())
+        let last_action = messages
+            .iter()
+            .rev()
+            .find_map(|msg| {
+                if msg["role"] == "tool" {
+                    Some("processing tool response".to_string())
+                } else if let Some(tool_calls) = msg.get("tool_calls") {
+                    tool_calls.as_array().and_then(|calls| {
+                        calls.first().and_then(|call| {
+                            call["function"]["name"].as_str().map(|name| match name {
+                                "web_search" => "searching the web".to_string(),
+                                "web_fetch" => "fetching a webpage".to_string(),
+                                _ => format!("using {}", name),
+                            })
+                        })
+                    })
+                } else {
+                    None
+                }
+            })
+            .unwrap_or_else(|| "reasoning".to_string());
+
+        warn!(
+            "Agent reached max iterations ({}) while {}",
+            self.max_iterations, last_action
+        );
+        Ok(format!(
+            "Reached maximum iterations ({}) while {}. Try a more specific query or use --max-iterations to increase the limit.",
+            self.max_iterations, last_action
+        ))
     }
 
     async fn execute_tool(&self, tool_call: &ToolCall) -> Result<String> {

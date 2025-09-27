@@ -18,8 +18,7 @@ pub fn open_markdown_in_browser(markdown_content: &str) -> Result<()> {
             "HTML size ({} bytes) exceeds data URL limit, using temp file fallback",
             html_size
         );
-        open_html_via_temp_file(&html)
-            .context("Failed to open HTML via temp file")
+        open_html_via_temp_file(&html).context("Failed to open HTML via temp file")
     } else {
         let encoded = STANDARD.encode(html.as_bytes());
         let data_url = format!("data:text/html;charset=utf-8;base64,{}", encoded);
@@ -29,11 +28,9 @@ pub fn open_markdown_in_browser(markdown_content: &str) -> Result<()> {
                 "Encoded data URL ({} bytes) exceeds limit, using temp file fallback",
                 data_url.len()
             );
-            open_html_via_temp_file(&html)
-                .context("Failed to open HTML via temp file")
+            open_html_via_temp_file(&html).context("Failed to open HTML via temp file")
         } else {
-            webbrowser::open(&data_url)
-                .context("Failed to open browser with data URL")
+            webbrowser::open(&data_url).context("Failed to open browser with data URL")
         }
     }
 }
@@ -42,17 +39,16 @@ fn open_html_via_temp_file(html: &str) -> Result<()> {
     let temp_dir = std::env::temp_dir();
     let timestamp = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
-        .unwrap()
-        .as_secs();
-    let file_name = format!("weavex_result_{}.html", timestamp);
+        .context("System time error")?
+        .as_micros();
+    let pid = std::process::id();
+    let file_name = format!("weavex_result_{}_{}.html", timestamp, pid);
     let temp_path = temp_dir.join(file_name);
 
-    fs::write(&temp_path, html)
-        .context("Failed to write HTML to temp file")?;
+    fs::write(&temp_path, html).context("Failed to write HTML to temp file")?;
 
     let url = format!("file://{}", temp_path.display());
-    webbrowser::open(&url)
-        .context("Failed to open browser with temp file")?;
+    webbrowser::open(&url).context("Failed to open browser with temp file")?;
 
     tracing::debug!("Opened HTML in browser from temp file: {:?}", temp_path);
     Ok(())

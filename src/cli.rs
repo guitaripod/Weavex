@@ -70,7 +70,8 @@ pub struct Cli {
         long,
         value_name = "SECONDS",
         default_value = "30",
-        help = "Request timeout in seconds"
+        value_parser = validate_timeout,
+        help = "Request timeout in seconds (1-600)"
     )]
     pub timeout: u64,
 }
@@ -132,6 +133,16 @@ pub enum Command {
         #[arg(long, help = "Disable browser preview (preview is enabled by default)")]
         no_preview: bool,
     },
+}
+
+fn validate_timeout(s: &str) -> Result<u64, String> {
+    let timeout: u64 = s
+        .parse()
+        .map_err(|_| format!("'{}' is not a valid number", s))?;
+    if !(1..=600).contains(&timeout) {
+        return Err("timeout must be between 1 and 600 seconds".to_string());
+    }
+    Ok(timeout)
 }
 
 impl Cli {
