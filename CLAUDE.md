@@ -36,7 +36,8 @@ cargo run -- fetch https://example.com
 - Tools: `web_search` and `web_fetch` (defined in `ollama_local.rs`)
 - Iterates up to 50 times by default, truncates results to 8000 chars for context management
 - Reasoning mode enabled by default (`think: true` parameter)
-- Default mode: shows only final answer with loading animation (🧵 Weaving...)
+- Default mode: opens final result in browser with markdown rendering (🌐)
+- `--no-preview` flag: disables browser preview, shows terminal output instead
 - `--show-thinking` flag: displays reasoning (🧠), tool calls (🔎 🌐), and responses (💬)
 
 **Key quirk:** Agent's thinking output in `ChatMessage.thinking` field, only displayed when `--show-thinking` is used
